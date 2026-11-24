@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wordland — Belajar Bahasa Inggris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+html{color-scheme:light}
+:root{--peri:#8E9AF0;--peri-d:#5F6BD0;--pink:#FFC6DD;--pink-d:#E6709F;--bg:#F3EFFF;--card:#fff;--ink:#2E2A55;--soft:#6B6896;--ok:#3DAA7D;--bad:#E0566B;
+--dot:radial-gradient(circle,#ffffff 3px,transparent 3.5px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;color:var(--ink);background:#FFE8F1;min-height:100vh;line-height:1.55}
+h1,h2,h3,.brand{font-family:Fredoka,Nunito,sans-serif;font-weight:600;margin:0 0 .4em}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pink-d);outline-offset:2px}
+.view{display:none;max-width:860px;margin:0 auto;padding:20px 18px 60px}
+.view.on{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.view.on{animation:none}*{transition:none!important}}
+.btn{background:var(--peri-d);color:#fff;border:0;border-radius:999px;padding:12px 26px;font-weight:700;box-shadow:0 4px 0 #444fa8}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #444fa8}
+.btn.pink{background:var(--pink-d);box-shadow:0 4px 0 #b84c78}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none;border:2px solid var(--peri)}
+.card{background:var(--card);border-radius:24px;padding:22px;box-shadow:0 6px 0 rgba(142,154,240,.25)}
+/* login */
+#login{max-width:420px;padding-top:9vh}
+#login .card{text-align:center;border:3px dashed var(--pink)}
+.logo{font-size:56px}
+.brand{font-size:40px;color:var(--peri-d)}
+input{width:100%;padding:12px 16px;margin:6px 0 12px;border-radius:14px;border:2px solid var(--peri);background:var(--bg);color:var(--ink);font:inherit}
+label{display:block;text-align:left;font-weight:700;font-size:14px}
+.err{color:var(--bad);min-height:20px;font-size:14px}
+/* nav */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.top .brand{font-size:26px}
+.top nav{display:flex;gap:8px;flex-wrap:wrap}
+.top nav button{padding:6px 12px;font-size:14px;box-shadow:none;border-radius:999px;border:2px solid var(--peri);background:var(--card);color:var(--ink);font-weight:700}
+.top nav button.cur{background:var(--peri-d);color:#fff;border-color:var(--peri-d)}
+/* home */
+.hero{background:linear-gradient(135deg,var(--peri),var(--pink));color:#1f1b4a;border-radius:28px;padding:28px;margin-bottom:20px}
+.hero h1{font-size:30px}
+.wotd{background:rgba(255,255,255,.75);border-radius:18px;padding:12px 16px;margin-top:14px;display:inline-block;color:#2E2A55}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.menu button{text-align:left;border:0;background:var(--card);border-radius:24px;padding:22px;box-shadow:0 6px 0 rgba(142,154,240,.3);color:var(--ink);transition:transform .15s}
+.menu button:hover{transform:translateY(-3px)}
+.menu .em{font-size:38px;display:block}
+.menu b{font-family:Fredoka;font-size:21px}
+.menu span.d{display:block;color:var(--soft);font-size:14px}
+/* tabs */
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tabs button{border:2px solid var(--peri);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 18px;font-weight:700}
+.tabs button[aria-selected=true]{background:var(--pink);border-color:var(--pink-d);color:#4a1030}
+/* flip cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.flip{height:130px;perspective:700px;border:0;background:none;padding:0}
+.flip i{display:block;position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;font-style:normal}
+.flip.on i{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;padding:10px;text-align:center}
+.flip .f{background:var(--card);box-shadow:0 5px 0 rgba(142,154,240,.3);color:var(--ink)}
+.flip .f b{font-family:Fredoka;font-size:23px;color:var(--peri-d)}
+.flip .b{background:var(--pink);color:#4a1030;transform:rotateY(180deg)}
+.flip small{opacity:.8}
+.hint{color:var(--soft);font-size:14px}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:16px;overflow:hidden}
+td,th{padding:10px 14px;text-align:left;border-bottom:1px solid rgba(142,154,240,.3)}
+th{background:var(--peri);color:#fff}
+.box{background:var(--card);border-radius:20px;padding:18px;margin-bottom:14px;border-left:8px solid var(--pink-d)}
+.ex{background:var(--bg);border-radius:12px;padding:8px 12px;margin-top:8px;font-style:italic}
+/* quiz */
+.bar{height:12px;border-radius:99px;background:rgba(142,154,240,.3);overflow:hidden;margin-bottom:16px}
+.bar div{height:100%;background:var(--pink-d);width:0;transition:width .4s}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:14px 18px;border-radius:16px;border:2px solid var(--peri);background:var(--card);color:var(--ink);font-weight:600}
+.opt:hover:not(:disabled){background:var(--bg)}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.fb{min-height:48px;margin:10px 0;font-weight:600}
+.score{text-align:center}
+.score .big{font-family:Fredoka;font-size:64px;color:var(--peri-d)}
+
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.stats{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:14px;font-weight:700}
+.sent{font-size:22px}.blank{border-bottom:3px solid var(--pink-d);padding:0 14px;color:var(--pink-d)}
+.chat{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.bub{max-width:82%;padding:10px 16px;border-radius:18px}
+.bub.l{background:var(--bg);border-bottom-left-radius:4px;align-self:flex-start}
+.bub.r{background:var(--peri-d);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.mc{height:90px;border-radius:16px;border:0;font-weight:700;background:var(--peri);color:#fff;box-shadow:0 4px 0 #5f6bd0;font-size:13px;padding:4px;overflow:hidden;word-break:break-word}
+.mc .mf{display:none}.mc .mb{font:600 30px Fredoka}
+.mc.on,.mc.done{background:var(--card);color:var(--ink);box-shadow:0 4px 0 rgba(142,154,240,.4)}
+.mc.done{background:var(--pink);color:#4a1030}
+.mc.on .mf,.mc.done .mf{display:inline}.mc.on .mb,.mc.done .mb{display:none}
+.tiles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.tiles span{background:var(--pink);color:#4a1030;font:600 26px Fredoka;width:44px;height:48px;display:grid;place-items:center;border-radius:12px;box-shadow:0 4px 0 #d34c7d}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.stars span{position:absolute;color:var(--peri);opacity:.5;animation:tw 4s ease-in-out infinite}
+.stars span:nth-child(3n){color:var(--pink-d);opacity:.45}
+@keyframes tw{50%{opacity:.15;transform:scale(.8)}}
+@media(prefers-reduced-motion:reduce){.stars span{animation:none}}
+.view{position:relative;z-index:1}
+.dots{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.dots i{position:absolute;border-radius:50%;opacity:.6;animation:drift 9s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--dx),var(--dy))}}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:0}}
+@keyframes pop{50%{transform:scale(1.35)}}
+.conf{position:fixed;top:-40px;z-index:50;pointer-events:none;animation:fall 2s ease-in forwards}
+.pts{background:var(--card);border:2px solid var(--pink-d);border-radius:999px;padding:3px 14px;font-weight:800;display:inline-block}
+.pts.pop{animation:pop .4s}
+@media(prefers-reduced-motion:reduce){.dots i,.pts.pop{animation:none}}
+.card{border:3px solid #fff}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 92% 88%,#FFE29A 0 30px,transparent 31px),radial-gradient(circle at 76% 105%,#B8F0D8 0 24px,transparent 25px),radial-gradient(circle at 3% 105%,#ffffff99 0 44px,transparent 45px),linear-gradient(135deg,var(--peri),var(--pink))}
+.hero::after{content:"⭐";position:absolute;right:18px;top:6px;font-size:76px;transform:rotate(14deg)}
+.hero h1,.hero>p{padding-right:64px}
+.menu button:hover{transform:translateY(-4px) rotate(-1deg)}
+.menu button:nth-child(1){background:#DDE2FF;box-shadow:0 6px 0 #AEB8F5}
+.menu button:nth-child(2){background:#FFD9E8;box-shadow:0 6px 0 #F5A8C8}
+.menu button:nth-child(3){background:#D5F5E6;box-shadow:0 6px 0 #9FDCBD}
+.menu button:nth-child(4){background:#FFF1C2;box-shadow:0 6px 0 #EDD27F}
+.menu button:nth-child(5){background:#FFE0CC;box-shadow:0 6px 0 #F2B48F}
+.menu button:nth-child(6){background:#E8DAFF;box-shadow:0 6px 0 #C4A8F2}
+.menu button:nth-child(7){background:#D3F0FA;box-shadow:0 6px 0 #98D3E8}
+/* h5p */
+.h5p-wrap{margin-bottom:22px}
+.h5p-wrap iframe{width:100%;min-height:560px;border:0;border-radius:16px;background:#fff}
+ol.st li{margin-bottom:6px}
+code{background:var(--bg);padding:2px 6px;border-radius:6px;font-size:.9em}
+#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,40px);background:var(--ink);color:var(--bg);padding:10px 22px;border-radius:99px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div class="dots" id="dots" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"><span style="left:6%;top:8%;font-size:22px;animation-delay:0.0s">⭐</span><span style="left:88%;top:6%;font-size:18px;animation-delay:0.5s">⭐</span><span style="left:14%;top:38%;font-size:16px;animation-delay:1.0s">⭐</span><span style="left:92%;top:30%;font-size:26px;animation-delay:1.5s">⭐</span><span style="left:5%;top:70%;font-size:24px;animation-delay:2.0s">⭐</span><span style="left:80%;top:62%;font-size:16px;animation-delay:2.5s">⭐</span><span style="left:48%;top:92%;font-size:20px;animation-delay:3.0s">⭐</span><span style="left:70%;top:88%;font-size:14px;animation-delay:3.5s">⭐</span><span style="left:30%;top:14%;font-size:14px;animation-delay:4.0s">⭐</span><span style="left:60%;top:24%;font-size:18px;animation-delay:4.5s">⭐</span></div>
+<!-- LOGIN -->
+<section id="login" class="view on">
+  <div class="card">
+    <div class="logo">⭐</div>
+    <div class="brand">Wordland</div>
+    <p class="hint">Belajar Bahasa Inggris dengan ceria</p>
+    <label for="u">Nama pengguna</label><input id="u" autocomplete="username">
+    <label for="p">Kata sandi</label><input id="p" type="password" autocomplete="current-password">
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="go">Masuk ke Wordland</button>
+    <p class="hint">Demo: isi nama &amp; kata sandi apa saja untuk masuk ⭐</p>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="app" class="view">
+  <header class="top">
+    <div style="display:flex;align-items:center;gap:12px"><div class="brand">⭐ Wordland</div><span class="pts" id="pts" title="Bintang yang kamu kumpulkan">⭐ 0</span></div>
+    <nav id="nav">
+      <button data-go="home">Home</button>
+      <button data-go="materi">Materi</button>
+      <button data-go="tutorial">Tutorial</button>
+      <button data-go="drill">Drill</button>
+      <button data-go="sim">Simulasi</button>
+      <button data-go="game">Game</button>
+      <button data-go="kuis">Kuis</button>
+      <button data-go="h5p">H5P</button>
+      <button data-go="about">Tentang</button>
+      <button id="out">Keluar</button>
+    </nav>
+  </header>
+
+  <!-- HOME -->
+  <div data-page="home">
+    <div class="hero">
+      <h1 id="hi">Hello! Welcome back to Wordland ⭐</h1>
+      <p>Senang bertemu lagi! Yuk lanjutkan belajarmu hari ini dan kumpulkan bintang ⭐ dari setiap aktivitas!</p>
+      <div class="wotd"><b>⭐ Kosakata hari ini:</b> <span id="wotd"></span></div>
+    </div>
+    <div class="menu">
+      <button data-go="materi"><span class="em">📚</span><b>Materi</b><span class="d">Kosakata, sapaan, dan tenses dasar</span></button>
+      <button data-go="tutorial"><span class="em">🧭</span><b>Tutorial</b><span class="d">Belajar Simple Present langkah demi langkah</span></button>
+      <button data-go="drill"><span class="em">🔁</span><b>Practice &amp; Drill</b><span class="d">Latihan berulang sampai lancar</span></button>
+      <button data-go="sim"><span class="em">💬</span><b>Simulasi</b><span class="d">Mengobrol di kafe berbahasa Inggris</span></button>
+      <button data-go="game"><span class="em">🎮</span><b>Game</b><span class="d">Memory match dan tebak kata acak</span></button>
+      <button data-go="kuis"><span class="em">✏️</span><b>Kuis</b><span class="d">10 soal pilihan ganda dengan skor</span></button>
+      <button data-go="h5p"><span class="em">🧩</span><b>Latihan H5P</b><span class="d">Konten interaktif dari H5P</span></button>
+    </div>
+  </div>
+
+  <!-- MATERI -->
+  <div data-page="materi" hidden>
+    <h2>📚 Materi</h2>
+    <div class="tabs" role="tablist" id="mtabs">
+      <button role="tab" aria-selected="true" data-m="kosa">Kosakata</button>
+      <button role="tab" aria-selected="false" data-m="sapa">Sapaan</button>
+      <button role="tab" aria-selected="false" data-m="tense">Tenses dasar</button>
+    </div>
+    <div id="m-kosa">
+      <p class="hint">Klik kartu untuk melihat artinya dan contoh kalimat.</p>
+      <div class="grid" id="vocab"></div>
+    </div>
+    <div id="m-sapa" hidden>
+      <table><tr><th>English</th><th>Artinya</th><th>Dipakai saat</th></tr>
+        <tr><td>Good morning</td><td>Selamat pagi</td><td>Sebelum siang</td></tr>
+        <tr><td>Good afternoon</td><td>Selamat siang/sore</td><td>12.00–18.00</td></tr>
+        <tr><td>Good evening</td><td>Selamat malam</td><td>Saat bertemu di malam hari</td></tr>
+        <tr><td>Good night</td><td>Selamat tidur</td><td>Saat berpisah/tidur</td></tr>
+        <tr><td>How are you?</td><td>Apa kabar?</td><td>Menanyakan kabar</td></tr>
+        <tr><td>I’m fine, thank you.</td><td>Saya baik, terima kasih.</td><td>Menjawab kabar</td></tr>
+        <tr><td>Nice to meet you.</td><td>Senang bertemu denganmu.</td><td>Berkenalan</td></tr>
+        <tr><td>See you later.</td><td>Sampai jumpa nanti.</td><td>Berpisah</td></tr>
+      </table>
+      <div class="box" style="margin-top:14px"><b>Contoh percakapan</b>
+        <div class="ex">A: Good morning! How are you?<br>B: I’m fine, thank you. And you?<br>A: I’m great. Nice to meet you!</div></div>
+    </div>
+    <div id="m-tense" hidden>
+      <div class="box"><h3>Simple Present</h3>
+        <p>Untuk kebiasaan dan fakta. Rumus: <code>Subject + V1 (+s/es untuk he/she/it)</code></p>
+        <div class="ex">She reads a book every night.<br>They play football on Sunday.</div></div>
+      <div class="box"><h3>Present Continuous</h3>
+        <p>Untuk kejadian yang sedang berlangsung. Rumus: <code>Subject + am/is/are + V-ing</code></p>
+        <div class="ex">I am studying English now.<br>He is eating lunch.</div></div>
+      <div class="box"><h3>Simple Past</h3>
+        <p>Untuk kejadian yang sudah selesai. Rumus: <code>Subject + V2</code></p>
+        <div class="ex">We visited Bandung last week.<br>She watched a movie yesterday.</div></div>
+      <div class="box"><h3>Simple Future</h3>
+        <p>Untuk rencana atau prediksi. Rumus: <code>Subject + will + V1</code></p>
+        <div class="ex">I will call you tomorrow.<br>It will rain this evening.</div></div>
+    </div>
+  </div>
+
+  <!-- KUIS -->
+  <div data-page="kuis" hidden>
+    <h2>✏️ Kuis</h2>
+    <div class="card" id="quiz"></div>
+  </div>
+
+  <!-- H5P -->
+  <div data-page="h5p" hidden>
+    <h2>🎮 Latihan interaktif (H5P)</h2>
+    <div id="h5p-list"></div>
+  </div>
+
+  <!-- TUTORIAL -->
+  <div data-page="tutorial" hidden>
+    <h2>🧭 Tutorial: Simple Present</h2>
+    <p class="hint">Ikuti langkahnya satu per satu. Jawab cek pemahaman dengan benar untuk lanjut.</p>
+    <div class="card" id="tut"></div>
+  </div>
+
+  <!-- DRILL -->
+  <div data-page="drill" hidden>
+    <h2>🔁 Practice &amp; Drill</h2>
+    <p class="hint">Ketik bentuk kata kerja yang benar. Soal yang salah akan muncul lagi sampai kamu menguasainya.</p>
+    <div class="card" id="drill"></div>
+  </div>
+
+  <!-- SIMULASI -->
+  <div data-page="sim" hidden>
+    <h2>💬 Simulasi: di Wordland Café</h2>
+    <p class="hint">Kamu sedang memesan minuman. Pilih jawaban yang paling sopan dan tepat.</p>
+    <div class="card" id="sim"></div>
+  </div>
+
+  <!-- GAME -->
+  <div data-page="game" hidden>
+    <h2>🎮 Game</h2>
+    <div class="tabs" id="gtabs">
+      <button aria-selected="true" data-g="mem">Memory Match</button>
+      <button aria-selected="false" data-g="scr">Tebak Kata Acak</button>
+    </div>
+    <div class="card" id="mem"></div>
+    <div class="card" id="scr" hidden></div>
+  </div>
+
+  <!-- ABOUT -->
+  <div data-page="about" hidden>
+    <div class="card">
+      <h2>Tentang Wordland</h2>
+      <p>Wordland adalah ruang belajar Bahasa Inggris yang lembut dan ceria, dibuat untuk tugas mata kuliah Multimedia Interaktif dengan fokus pada alur UI/UX yang sederhana dan menyenangkan.</p>
+      <ul>
+        <li>Alur pengguna: Login → Home → pilih aktivitas → Tentang → Logout.</li><li>Empat format pembelajaran: Tutorial, Practice &amp; Drill, Simulasi, dan Game, ditambah Materi, Kuis, dan konten H5P.</li>
+        <li>Tema visual: soft pink, ungu, dan periwinkle dengan motif polkadot dan bintang.</li>
+        <li>Fokus mata kuliah: eksplorasi interaksi, transisi lembut, dan konsistensi UI.</li>
+      </ul>
+      <button class="btn" data-go="home">Kembali ke Home</button>
+    </div>
+  </div>
+</section>
+
+<div id="toast" role="status"></div>
+
+<script>
+/* ============ KONFIGURASI H5P ============
+   Tambahkan konten H5P kamu di sini. Dua cara:
+   1) iframe (dari h5p.org / situs H5P lain): { title, embed: "https://h5p.org/h5p/embed/XXXX" }
+   2) file sendiri (hasil Export dari Lumi, di-unzip ke folder repo):
+      { title, folder: "h5p/flashcards" }  -> folder berisi h5p.json dan content/ */
+const H5P_ITEMS = [
+  { title: "Wordland: True or False", desc: "10 soal Benar atau Salah. Setelah menjawab, kamu langsung dapat penjelasannya.", link: "https://keiacorp.h5p.com/content/1293051301974465397" },
+  // { title: "Flashcards Kosakata", embed: "https://h5p.org/h5p/embed/123456" },
+  // { title: "Drag the Words", folder: "h5p/drag-words" },
+];
+
+const VOCAB=[
+ ["lovely","manis, menyenangkan","What a lovely day!"],
+ ["happy","senang","I am happy today."],
+ ["beautiful","cantik, indah","What a beautiful flower!"],
+ ["friend","teman","She is my best friend."],
+ ["delicious","lezat","The cake is delicious."],
+ ["library","perpustakaan","I read books in the library."],
+ ["borrow","meminjam","Can I borrow your pen?"],
+ ["curious","penasaran","Kids are curious about everything."],
+ ["journey","perjalanan","Our journey starts tomorrow."],
+ ["brave","berani","The brave girl helped the cat."],
+ ["gentle","lembut","Be gentle with the baby."],
+ ["famous","terkenal","Bandung is famous for its food."]
+];
+const QUIZ=[
+ ["Apa arti “Good morning”?",["Selamat malam","Selamat pagi","Selamat tidur","Sampai jumpa"],1,"Good morning dipakai pada pagi hari."],
+ ["Pilih kalimat yang benar: She ___ a book every night.",["read","reads","reading","readed"],1,"He/she/it di Simple Present memakai V1 + s."],
+ ["“Library” artinya…",["Toko buku","Sekolah","Perpustakaan","Kantin"],2,"Library = perpustakaan."],
+ ["They ___ football now.",["play","played","are playing","will play"],2,"“Now” menandakan Present Continuous: are + V-ing."],
+ ["Jawaban yang tepat untuk “How are you?”",["Nice to meet you.","I’m fine, thank you.","Good night.","See you."],1,"Kita menjawab kabar dengan “I’m fine, thank you.”"],
+ ["We ___ Bandung last week.",["visit","visited","will visit","visiting"],1,"“Last week” memakai Simple Past (V2)."],
+ ["Sinonim “happy” adalah…",["Sad","Angry","Glad","Tired"],2,"Glad = senang, sama dengan happy."],
+ ["I ___ call you tomorrow.",["will","did","am","was"],0,"Rencana masa depan memakai will + V1."],
+ ["“Delicious” dipakai untuk…",["Makanan lezat","Cuaca panas","Orang baik","Jalan macet"],0,"Delicious = lezat."],
+ ["Lawan kata “brave” adalah…",["Strong","Scared","Kind","Smart"],1,"Brave = berani, lawannya scared = takut."]
+];
+
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2200)}
+
+/* dots, bintang, konfeti */
+(function(){const c=["#FFB3D1","#C9B6FF","#A9B8FF","#B8F0D8","#FFE29A","#FFC9A8","#A8E6F5"],box=$("#dots");
+for(let i=0;i<28;i++){const d=document.createElement("i"),z=14+Math.random()*46;
+d.style.cssText=`width:${z}px;height:${z}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${c[i%c.length]};--dx:${(Math.random()-.5)*60}px;--dy:${(Math.random()-.5)*80}px;animation-duration:${7+Math.random()*8}s;animation-delay:-${Math.random()*8}s`;box.appendChild(d)}})();
+let starCount=0;
+function addStar(n=1){starCount+=n;const e=$("#pts");e.textContent="⭐ "+starCount;e.classList.remove("pop");void e.offsetWidth;if(n)e.classList.add("pop")}
+function burst(){
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  const c=["#FFB3D1","#C9B6FF","#A9B8FF","#B8F0D8","#FFE29A","#FFC9A8"];
+  for(let i=0;i<36;i++){const e=document.createElement("span"),z=10+Math.random()*14;e.className="conf";
+    if(i%4===0){e.textContent="⭐";e.style.fontSize=(z+8)+"px"}else{e.style.width=e.style.height=z+"px";e.style.borderRadius="50%";e.style.background=c[i%c.length]}
+    e.style.left=Math.random()*100+"%";e.style.animationDelay=Math.random()*.5+"s";e.style.animationDuration=(1.6+Math.random()*1.2)+"s";
+    document.body.appendChild(e);setTimeout(()=>e.remove(),3600)}
+}
+
+/* auth */
+function show(id){$$(".view").forEach(v=>v.classList.toggle("on",v.id===id))}
+$("#go").onclick=()=>{
+  const u=$("#u").value.trim(),p=$("#p").value;
+  if(!u||!p){$("#err").textContent="Isi nama pengguna dan kata sandi dulu ya.";return}
+  $("#err").textContent="";
+  $("#hi").textContent="Hello, "+u+"! Welcome back to Wordland ⭐";
+  starCount=0;addStar(0);show("app");go("home");
+};
+$("#p").addEventListener("keydown",e=>{if(e.key==="Enter")$("#go").click()});
+$("#out").onclick=()=>{show("login");$("#u").value=$("#p").value="";toast("Berhasil logout 🌷")};
+
+/* nav */
+function go(p){
+  $$("[data-page]").forEach(d=>d.hidden=d.dataset.page!==p);
+  $$("#nav button[data-go]").forEach(b=>b.classList.toggle("cur",b.dataset.go===p));
+  if(p==="kuis")startQuiz();
+  if(p==="h5p")loadH5P();
+  if(p==="tutorial"){ti=0;tutRender()}
+  if(p==="drill")drillStart();
+  if(p==="sim")simStart();
+  if(p==="game"){memStart();scrStart()}
+  scrollTo(0,0);
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
+
+/* kosakata hari ini */
+const w=VOCAB[new Date().getDate()%VOCAB.length];
+$("#wotd").innerHTML="<b>"+w[0]+"</b> — "+w[1];
+
+/* materi tabs */
+$("#mtabs").onclick=e=>{
+  const b=e.target.closest("[data-m]");if(!b)return;
+  $$("#mtabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  ["kosa","sapa","tense"].forEach(k=>$("#m-"+k).hidden=k!==b.dataset.m);
+};
+$("#vocab").innerHTML=VOCAB.map(v=>`<button class="flip" aria-label="${v[0]}"><i><span class="f"><b>${v[0]}</b><small>klik untuk arti</small></span><span class="b"><b>${v[1]}</b><small>${v[2]}</small></span></i></button>`).join("");
+$("#vocab").onclick=e=>{const f=e.target.closest(".flip");if(f)f.classList.toggle("on")};
+
+/* kuis */
+let qi=0,sc=0;
+function startQuiz(){qi=0;sc=0;renderQ()}
+function renderQ(){
+  const q=QUIZ[qi],box=$("#quiz");
+  box.innerHTML=`<div class="bar"><div style="width:${qi/QUIZ.length*100}%"></div></div>
+  <p class="hint">Soal ${qi+1} dari ${QUIZ.length}</p><h3>${q[0]}</h3>
+  ${q[1].map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}
+  <div class="fb" role="status"></div><button class="btn" id="nx" hidden>${qi===QUIZ.length-1?"Lihat skor":"Soal berikutnya"}</button>`;
+  $$(".opt").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;$$(".opt").forEach(x=>x.disabled=true);
+    $$(".opt")[q[2]].classList.add("ok");
+    if(i===q[2]){sc++;addStar();$(".fb").textContent="Benar! 🎉 "+q[3]}
+    else{b.classList.add("no");$(".fb").textContent="Belum tepat. "+q[3]}
+    $("#nx").hidden=false;$("#nx").focus();
+  });
+  $("#nx").onclick=()=>{qi++;qi<QUIZ.length?renderQ():result()};
+}
+function result(){
+  const pct=Math.round(sc/QUIZ.length*100);if(pct>=80)burst();
+  const msg=pct>=80?"Luar biasa! Kamu jagoan Wordland 🌟":pct>=50?"Bagus! Ulangi materi sedikit lagi ya 🌷":"Jangan menyerah, baca materi lalu coba lagi 💪";
+  $("#quiz").innerHTML=`<div class="score"><div class="bar"><div style="width:100%"></div></div>
+  <div class="big">${sc}/${QUIZ.length}</div><p>${msg}</p>
+  <button class="btn pink" id="re">Ulangi kuis</button> <button class="btn ghost" data-go="materi">Buka materi</button></div>`;
+  $("#re").onclick=startQuiz;
+}
+
+/* TUTORIAL */
+const TUT=[
+ {t:"Kapan memakai Simple Present?",b:"Dipakai untuk <b>kebiasaan</b> dan <b>fakta</b>: hal yang terjadi berulang atau selalu benar.",ex:"I brush my teeth every morning.<br>The sun rises in the east.",q:"Kalimat mana yang menunjukkan kebiasaan?",o:["I brush my teeth every morning.","I am brushing my teeth now."],a:0},
+ {t:"Rumus untuk I, you, we, they",b:"Pakai kata kerja bentuk dasar (V1) tanpa tambahan apa pun.",ex:"I play football.<br>They live in Bandung.",q:"We ___ English every day.",o:["study","studies"],a:0},
+ {t:"He, she, it: tambah -s",b:"Untuk subjek tunggal (he, she, it, nama orang), kata kerja ditambah <b>-s</b>.",ex:"He drinks coffee.<br>She reads a book.",q:"My sister ___ music.",o:["love","loves"],a:1},
+ {t:"Kata kerja berakhiran -ch, -sh, -s, -x, -o",b:"Tambahkan <b>-es</b>. Kata kerja berakhiran konsonan + y berubah menjadi <b>-ies</b>.",ex:"watch → watches<br>go → goes<br>study → studies",q:"She ___ TV at night.",o:["watchs","watches"],a:1},
+ {t:"Kalimat negatif",b:"Pakai <b>do not (don’t)</b> atau <b>does not (doesn’t)</b>, lalu kata kerja kembali ke bentuk dasar.",ex:"I don’t like spicy food.<br>She doesn’t like spicy food.",q:"He ___ eat meat.",o:["don’t","doesn’t"],a:1}
+];
+let ti=0;
+function tutRender(){
+  const s=TUT[ti],last=ti===TUT.length-1;
+  $("#tut").innerHTML=`<div class="bar"><div style="width:${ti/TUT.length*100}%"></div></div>
+  <p class="hint">Langkah ${ti+1} dari ${TUT.length}</p><h3>${s.t}</h3><p>${s.b}</p><div class="ex">${s.ex}</div>
+  <h3 style="margin-top:18px">Cek pemahaman</h3><p>${s.q}</p>
+  ${s.o.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}
+  <div class="fb" role="status"></div>
+  <div class="row"><button class="btn ghost" id="tp" ${ti?"":"disabled"}>Sebelumnya</button><button class="btn" id="tn" disabled>${last?"Selesai":"Lanjut"}</button></div>`;
+  $$("#tut .opt").forEach(b=>b.onclick=()=>{
+    if(+b.dataset.i===s.a){$$("#tut .opt").forEach(x=>x.disabled=true);b.classList.add("ok");$("#tut .fb").textContent="Tepat! 🎉";addStar();$("#tn").disabled=false;$("#tn").focus()}
+    else{b.classList.add("no");b.disabled=true;$("#tut .fb").textContent="Belum tepat, coba lagi ya."}
+  });
+  $("#tp").onclick=()=>{ti--;tutRender()};
+  $("#tn").onclick=()=>{
+    if(last){burst();addStar(3);$("#tut").innerHTML=`<div class="score"><div class="big">🎓</div><h3>Tutorial selesai!</h3><p>Sekarang waktunya berlatih supaya makin lancar.</p><button class="btn pink" data-go="drill">Mulai drill</button> <button class="btn ghost" id="tr">Ulangi tutorial</button></div>`;$("#tr").onclick=()=>{ti=0;tutRender()}}
+    else{ti++;tutRender()}
+  };
+}
+
+/* DRILL */
+const DRILL=[["She ___ (go) to school every day.","goes"],["They ___ (play) football on Sunday.","play"],["He ___ (watch) TV at night.","watches"],["I ___ (study) English every day.","study"],["My mother ___ (cook) dinner.","cooks"],["The sun ___ (rise) in the east.","rises"],["We ___ (live) in Bandung.","live"],["She ___ (study) hard every night.","studies"],["The bus ___ (leave) at 7 a.m.","leaves"],["Birds ___ (fly).","fly"],["He ___ (fix) bikes.","fixes"],["You ___ (speak) English well.","speak"]];
+let dq=[],dc=0,ds=0,dbest=0,dchk=false;
+function drillStart(){dq=[...DRILL].sort(()=>Math.random()-.5);dc=0;ds=0;dbest=0;drillNext()}
+function drillNext(){
+  const box=$("#drill");
+  if(!dq.length){burst();box.innerHTML=`<div class="score"><div class="big">🏆</div><h3>Drill selesai!</h3><p>Semua soal sudah benar. Streak terbaikmu: ${dbest}.</p><button class="btn pink" id="dr">Ulangi drill</button></div>`;$("#dr").onclick=drillStart;return}
+  dchk=false;const q=dq[0];
+  box.innerHTML=`<div class="stats"><span>✅ Benar: ${dc}</span><span>🔥 Streak: ${ds}</span><span>📋 Sisa: ${dq.length}</span></div>
+  <h3 class="sent">${q[0].replace("___","<span class='blank'>&nbsp;&nbsp;&nbsp;&nbsp;</span>")}</h3>
+  <input id="da" autocomplete="off" autocapitalize="off" aria-label="Jawaban">
+  <div class="fb" role="status"></div><button class="btn" id="dk">Cek</button>`;
+  const inp=$("#da");inp.focus();
+  const act=()=>{
+    if(dchk){drillNext();return}
+    const a=inp.value.trim().toLowerCase();if(!a)return;
+    dchk=true;inp.disabled=true;
+    if(a===q[1]){addStar();dc++;ds++;dbest=Math.max(dbest,ds);dq.shift();$("#drill .fb").textContent="Benar! ✅"}
+    else{ds=0;dq.push(dq.shift());$("#drill .fb").textContent="Belum tepat. Jawabannya: "+q[1]+". Soal ini akan muncul lagi."}
+    $("#dk").textContent="Berikutnya";$("#dk").focus();
+  };
+  $("#dk").onclick=act;inp.onkeydown=e=>{if(e.key==="Enter")act()};
+}
+
+/* SIMULASI */
+const SIM=[
+ {w:"Good afternoon! Welcome to Wordland Café. What would you like?",c:[["I’d like a cup of tea, please.",2,"Sopan dan tepat!"],["Give me tea.",0,"Terlalu kasar. Pakai “I’d like … please”."],["I am want tea.",0,"Kurang tepat. Gunakan “I want” atau “I’d like”, tanpa “am”."]]},
+ {w:"Sure! Would you like it hot or iced?",c:[["Iced, please.",2,"Jawaban singkat yang sopan."],["Hot, thank you.",2,"Jawaban singkat yang sopan."],["Ice, I.",0,"Susunan katanya belum tepat. Coba “Iced, please.”"]]},
+ {w:"Anything to eat?",c:[["No, thank you. That’s all.",2,"Menolak dengan sopan."],["Yes, I’d like a slice of cake.",2,"Memesan dengan sopan."],["No eat.",0,"Gunakan “No, thank you.”"]]},
+ {w:"Okay. That will be 25,000 rupiah.",c:[["Here you are. Thank you!",2,"Pas untuk menyerahkan uang."],["Can I pay by card?",2,"Pertanyaan yang sopan."],["Take it.",0,"Kurang sopan. Coba “Here you are.”"]]}
+];
+let si=0,ssc=0,slog=[],sans=null;
+function simStart(){si=0;ssc=0;slog=[];sans=null;simRender()}
+function simRender(){
+  let h=`<div class="chat">`+slog.map(l=>`<div class="bub l">${l.w}</div><div class="bub r">${l.y}</div>`).join("");
+  if(si<SIM.length){
+    const s=SIM[si];h+=`<div class="bub l">${s.w}</div>`+(sans?`<div class="bub r">${sans.y}</div>`:"")+`</div>`;
+    h+=sans?`<div class="fb" role="status">${sans.pts?"👍 ":"💡 "}${sans.fb}</div><button class="btn" id="sn">${si===SIM.length-1?"Lihat hasil":"Lanjut"}</button>`
+      :s.c.map((c,i)=>`<button class="opt" data-i="${i}">${c[0]}</button>`).join("");
+  }else{
+    const max=SIM.length*2,r=ssc/max;if(r>=.8)setTimeout(burst,100);
+    h+=`</div><div class="score"><div class="big">${ssc}/${max}</div><p>${r>=.8?"Luar biasa! Percakapanmu sopan dan lancar 🌟":r>=.5?"Bagus! Beberapa jawaban masih bisa lebih sopan 🌷":"Coba lagi dan perhatikan kata “please” dan “thank you” 💪"}</p><button class="btn pink" id="sr">Main lagi</button></div>`;
+  }
+  $("#sim").innerHTML=h;
+  $$("#sim .opt").forEach(b=>b.onclick=()=>{const c=SIM[si].c[+b.dataset.i];sans={y:c[0],pts:c[1],fb:c[2]};if(c[1])addStar();simRender()});
+  if($("#sn"))$("#sn").onclick=()=>{slog.push({w:SIM[si].w,y:sans.y});ssc+=sans.pts;si++;sans=null;simRender()};
+  if($("#sr"))$("#sr").onclick=simStart;
+}
+
+/* GAME */
+$("#gtabs").onclick=e=>{
+  const b=e.target.closest("[data-g]");if(!b)return;
+  $$("#gtabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  $("#mem").hidden=b.dataset.g!=="mem";$("#scr").hidden=b.dataset.g!=="scr";
+};
+let mFirst=null,mLock=false,mMoves=0,mMatched=0;
+function memStart(){
+  const pick=[...VOCAB].sort(()=>Math.random()-.5).slice(0,6),cards=[];
+  pick.forEach((v,i)=>{cards.push({k:i,t:v[0]});cards.push({k:i,t:v[1].split(",")[0]})});
+  cards.sort(()=>Math.random()-.5);mFirst=null;mLock=false;mMoves=0;mMatched=0;
+  $("#mem").innerHTML=`<p class="hint">Cocokkan kata Inggris dengan artinya dalam Bahasa Indonesia.</p>
+  <div class="stats"><span>Langkah: <b id="mm">0</b></span><span>Pasangan: <b id="mp">0</b>/6</span><button class="btn ghost" id="mr">Acak ulang</button></div>
+  <div class="mgrid">${cards.map(c=>`<button class="mc" data-k="${c.k}"><span class="mf">${c.t}</span><span class="mb">?</span></button>`).join("")}</div>
+  <div class="fb" id="mmsg" role="status"></div>`;
+}
+$("#mem").onclick=e=>{
+  if(e.target.closest("#mr")){memStart();return}
+  const c=e.target.closest(".mc");
+  if(!c||mLock||c.classList.contains("on")||c.classList.contains("done"))return;
+  c.classList.add("on");
+  if(!mFirst){mFirst=c;return}
+  mMoves++;$("#mm").textContent=mMoves;
+  if(mFirst.dataset.k===c.dataset.k){
+    mFirst.classList.replace("on","done");c.classList.replace("on","done");mFirst=null;mMatched++;addStar();$("#mp").textContent=mMatched;
+    if(mMatched===6){burst();$("#mmsg").textContent="Hebat! Selesai dalam "+mMoves+" langkah 🎉"}
+  }else{mLock=true;const a=mFirst;mFirst=null;setTimeout(()=>{a.classList.remove("on");c.classList.remove("on");mLock=false},800)}
+};
+let sw=[],sidx=0,ssco=0,schk=false,stry=0;
+function shuf(w){let a;do{a=w.split("").sort(()=>Math.random()-.5).join("")}while(a===w);return a}
+function scrStart(){sw=[...VOCAB].sort(()=>Math.random()-.5).slice(0,8);sidx=0;ssco=0;scrRender()}
+function scrRender(){
+  const box=$("#scr");
+  if(sidx>=sw.length){if(ssco>=6)burst();box.innerHTML=`<div class="score"><div class="big">${ssco}/${sw.length}</div><p>${ssco>=6?"Kamu jago menyusun kata! 🌟":"Seru! Main lagi untuk skor lebih tinggi 🌷"}</p><button class="btn pink" id="sr2">Main lagi</button></div>`;$("#sr2").onclick=scrStart;return}
+  const v=sw[sidx];schk=false;stry=0;
+  box.innerHTML=`<p class="hint">Kata ${sidx+1} dari ${sw.length}. Skor: ${ssco}</p>
+  <div class="tiles" aria-label="Huruf acak">${shuf(v[0]).split("").map(l=>`<span>${l}</span>`).join("")}</div>
+  <p>Petunjuk: artinya <b>${v[1]}</b></p>
+  <input id="sa" autocomplete="off" autocapitalize="off" aria-label="Susun kata">
+  <div class="fb" role="status"></div>
+  <div class="row"><button class="btn" id="sk">Cek</button><button class="btn ghost" id="ss">Lewati</button></div>`;
+  const inp=$("#sa");inp.focus();
+  const act=()=>{
+    if(schk){sidx++;scrRender();return}
+    const a=inp.value.trim().toLowerCase();if(!a)return;
+    if(a===v[0]){if(!stry){ssco++;addStar()}schk=true;inp.disabled=true;$("#scr .fb").textContent="Benar! ✅";$("#sk").textContent="Berikutnya";$("#ss").hidden=true;$("#sk").focus()}
+    else{stry++;$("#scr .fb").textContent="Belum tepat, coba lagi."}
+  };
+  $("#sk").onclick=act;inp.onkeydown=e=>{if(e.key==="Enter")act()};
+  $("#ss").onclick=()=>{sidx++;scrRender()};
+}
+
+/* H5P */
+let h5pLoaded=false;
+function loadH5P(){
+  if(h5pLoaded)return;h5pLoaded=true;
+  const L=$("#h5p-list");
+  if(!H5P_ITEMS.length){
+    L.innerHTML=`<div class="card"><h3>Belum ada konten H5P</h3>
+    <p>Halaman ini siap menampilkan latihan H5P. Cara menambahkannya:</p>
+    <ol class="st"><li>Buat konten di <b>Lumi</b> (lumi.education), lalu klik <b>Export</b> untuk dapat file <code>.h5p</code>.</li>
+    <li>Ganti ekstensi file jadi <code>.zip</code>, ekstrak ke folder di repo, misalnya <code>h5p/flashcards</code>.</li>
+    <li>Di file ini, isi <code>H5P_ITEMS</code> dengan <code>{ title: "Flashcards", folder: "h5p/flashcards" }</code>.</li>
+    <li>Atau pakai kode embed dari h5p.org: <code>{ title: "Kuis", embed: "https://h5p.org/h5p/embed/ID" }</code>.</li></ol></div>`;
+    return;
+  }
+  const needLib=H5P_ITEMS.some(i=>i.folder);
+  const run=()=>H5P_ITEMS.forEach((it,n)=>{
+    const d=document.createElement("div");d.className="h5p-wrap card";
+    d.innerHTML=`<h3>${it.title}</h3><div id="h5p-${n}"></div>`;L.appendChild(d);
+    if(it.embed){$("#h5p-"+n).innerHTML=`<iframe src="${it.embed}" allowfullscreen allow="autoplay *; encrypted-media *" title="${it.title}"></iframe>`}
+    else if(it.folder){new H5PStandalone.H5P($("#h5p-"+n),{h5pJsonPath:it.folder,
+      frameJs:"https://cdn.jsdelivr.net/npm/h5p-standalone@3.8.0/dist/frame.bundle.js",
+      frameCss:"https://cdn.jsdelivr.net/npm/h5p-standalone@3.8.0/dist/styles/h5p.css"})}
+    if(it.link){const only=!it.embed&&!it.folder;d.insertAdjacentHTML("beforeend",(only?`<p>${it.desc||""}</p>`:`<p class="hint" style="margin:12px 0 6px">Kuis tidak tampil? Buka di tab baru:</p>`)+`<a class="btn pink" style="display:inline-block;text-decoration:none" href="${it.link}" target="_blank" rel="noopener">${only?"Mulai kuis":"Buka kuis di tab baru"}</a>`)}
+  });
+  if(needLib){const s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/h5p-standalone@3.8.0/dist/main.bundle.js";s.onload=run;document.body.appendChild(s)}
+  else run();
+  if(H5P_ITEMS.some(i=>i.embed)){const r=document.createElement("script");r.src="https://keiacorp.h5p.com/js/h5p-resizer.js";document.body.appendChild(r)}
+}
+</script>
+</body>
+</html>
